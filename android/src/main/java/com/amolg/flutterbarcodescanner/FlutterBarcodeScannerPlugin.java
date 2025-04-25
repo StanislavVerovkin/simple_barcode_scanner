@@ -17,8 +17,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 
 import java.util.Map;
 
-import io.flutter.embedding.android.FlutterActivity;
-
+import io.flutter.embedding.android.FlutterFragmentActivity; // Change to FlutterFragmentActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -32,14 +31,10 @@ import io.flutter.plugin.common.PluginRegistry.ActivityResultListener;
 import io.flutter.plugin.common.EventChannel.StreamHandler;
 import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter;
 
-
-/**
- * FlutterBarcodeScannerPlugin
- */
 public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityResultListener, StreamHandler, FlutterPlugin, ActivityAware {
     private static final String CHANNEL = "flutter_barcode_scanner";
 
-    private static FlutterActivity activity;
+    private static FlutterFragmentActivity activity; // Change type to FlutterFragmentActivity
     private static Result pendingResult;
     private Map<String, Object> arguments;
 
@@ -53,21 +48,14 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
     static EventChannel.EventSink barcodeStream;
     private EventChannel eventChannel;
 
-    /**
-     * V2 embedding
-     *
-     * @param activity
-     */
     private MethodChannel channel;
     private FlutterPluginBinding pluginBinding;
     private ActivityPluginBinding activityBinding;
     private Application applicationContext;
-    // This is null when not using v2 embedding;
     private Lifecycle lifecycle;
     private LifeCycleObserver observer;
 
-    public FlutterBarcodeScannerPlugin() {
-    }
+    public FlutterBarcodeScannerPlugin() {}
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
@@ -103,8 +91,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
                 if (null != arguments.get("delayMillis"))
                     delayMillis = (int) arguments.get("delayMillis");
 
-
-                startBarcodeScannerActivityView((String) arguments.get("cancelButtonText"), isContinuousScan,cameraFacingText);
+                startBarcodeScannerActivityView((String) arguments.get("cancelButtonText"), isContinuousScan, cameraFacingText);
             }
         } catch (Exception e) {
             Log.e(TAG, "onMethodCall: " + e.getLocalizedMessage());
@@ -144,15 +131,6 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         }
     }
 
-
-    /**
-     * Get the barcode scanning results in onActivityResult
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     * @return
-     */
     @Override
     public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == RC_BARCODE_CAPTURE) {
@@ -178,29 +156,20 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         return false;
     }
 
-
     @Override
     public void onListen(Object o, EventChannel.EventSink eventSink) {
         try {
             barcodeStream = eventSink;
-        } catch (Exception e) {
-        }
+        } catch (Exception e) {}
     }
 
     @Override
     public void onCancel(Object o) {
         try {
             barcodeStream = null;
-        } catch (Exception e) {
-
-        }
+        } catch (Exception e) {}
     }
 
-    /**
-     * Continuous receive barcode
-     *
-     * @param barcode
-     */
     public static void onBarcodeScanReceiver(final Barcode barcode) {
         try {
             if (barcode != null && !barcode.displayValue.isEmpty()) {
@@ -240,32 +209,14 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         onAttachedToActivity(binding);
     }
 
-    /**
-     * Setup method
-     * Created after Embedding V2 API release
-     *
-     * @param messenger
-     * @param applicationContext
-     * @param activity
-     * @param activityBinding
-     */
-    private void createPluginSetup(
-            final BinaryMessenger messenger,
-            final Application applicationContext,
-            final Activity activity,
-            final ActivityPluginBinding activityBinding) {
-
-
-        this.activity = (FlutterActivity) activity;
-        eventChannel =
-                new EventChannel(messenger, "flutter_barcode_scanner_receiver");
+    private void createPluginSetup(final BinaryMessenger messenger, final Application applicationContext, final Activity activity, final ActivityPluginBinding activityBinding) {
+        this.activity = (FlutterFragmentActivity) activity;  // Update to use FlutterFragmentActivity
+        eventChannel = new EventChannel(messenger, "flutter_barcode_scanner_receiver");
         eventChannel.setStreamHandler(this);
-
 
         this.applicationContext = applicationContext;
         channel = new MethodChannel(messenger, CHANNEL);
         channel.setMethodCallHandler(this);
-        // V2 embedding setup for activity listeners.
         activityBinding.addActivityResultListener(this);
         lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(activityBinding);
         observer = new LifeCycleObserver(activity);
@@ -287,9 +238,6 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         clearPluginSetup();
     }
 
-    /**
-     * Clear plugin setup
-     */
     private void clearPluginSetup() {
         activity = null;
         activityBinding.removeActivityResultListener(this);
@@ -303,11 +251,7 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         applicationContext = null;
     }
 
-    /**
-     * Activity lifecycle observer
-     */
-    private class LifeCycleObserver
-            implements Application.ActivityLifecycleCallbacks, DefaultLifecycleObserver {
+    private class LifeCycleObserver implements Application.ActivityLifecycleCallbacks, DefaultLifecycleObserver {
         private final Activity thisActivity;
 
         LifeCycleObserver(Activity activity) {
@@ -315,20 +259,16 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         }
 
         @Override
-        public void onCreate(@NonNull LifecycleOwner owner) {
-        }
+        public void onCreate(@NonNull LifecycleOwner owner) {}
 
         @Override
-        public void onStart(@NonNull LifecycleOwner owner) {
-        }
+        public void onStart(@NonNull LifecycleOwner owner) {}
 
         @Override
-        public void onResume(@NonNull LifecycleOwner owner) {
-        }
+        public void onResume(@NonNull LifecycleOwner owner) {}
 
         @Override
-        public void onPause(@NonNull LifecycleOwner owner) {
-        }
+        public void onPause(@NonNull LifecycleOwner owner) {}
 
         @Override
         public void onStop(@NonNull LifecycleOwner owner) {
@@ -341,37 +281,28 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
         }
 
         @Override
-        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
-        }
+        public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
 
         @Override
-        public void onActivityStarted(Activity activity) {
-        }
+        public void onActivityStarted(Activity activity) {}
 
         @Override
-        public void onActivityResumed(Activity activity) {
-        }
+        public void onActivityResumed(Activity activity) {}
 
         @Override
-        public void onActivityPaused(Activity activity) {
-        }
+        public void onActivityPaused(Activity activity) {}
 
         @Override
-        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
-        }
+        public void onActivitySaveInstanceState(Activity activity, Bundle outState) {}
 
         @Override
         public void onActivityDestroyed(Activity activity) {
             if (thisActivity == activity && activity.getApplicationContext() != null) {
-                ((Application) activity.getApplicationContext())
-                        .unregisterActivityLifecycleCallbacks(
-                                this);
+                ((Application) activity.getApplicationContext()).unregisterActivityLifecycleCallbacks(this);
             }
         }
 
         @Override
-        public void onActivityStopped(Activity activity) {
-
-        }
+        public void onActivityStopped(Activity activity) {}
     }
 }
