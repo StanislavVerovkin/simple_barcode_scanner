@@ -72,9 +72,7 @@ class WindowBarcodeScanner extends StatelessWidget {
                 child: Text(snapshot.error.toString()),
               );
             }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return Container();
           }),
     );
   }

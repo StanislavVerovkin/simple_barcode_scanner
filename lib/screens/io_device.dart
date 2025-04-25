@@ -78,10 +78,8 @@ class BarcodeScanner extends StatelessWidget {
           ? _streamBarcodeForMobileAndTabDevices(scanMode)
           : _scanBarcodeForMobileAndTabDevices(scanMode);
 
-      return const Scaffold(
-        body: Center(
-          child: CircularProgressIndicator(),
-        ),
+      return Scaffold(
+        body: Container(),
       );
     }
   }
@@ -134,6 +132,7 @@ class BarcodeScannerView extends StatelessWidget {
   final Function? onClose;
   final bool continuous;
   final ScanFormat scanFormat;
+
   const BarcodeScannerView(
       {super.key,
       this.scannerWidth,
