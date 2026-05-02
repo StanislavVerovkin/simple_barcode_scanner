@@ -61,7 +61,10 @@ public class SwiftFlutterBarcodeScannerPlugin: NSObject, FlutterPlugin, ScanBarc
 
 
     public static func register(with registrar: FlutterPluginRegistrar) {
-        viewController = (UIApplication.shared.delegate?.window??.rootViewController)!
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+        let window = windowScene.windows.first {
+            viewController = window.rootViewController
+        }
         let channel = FlutterMethodChannel(name: "flutter_barcode_scanner", binaryMessenger: registrar.messenger())
         let instance = SwiftFlutterBarcodeScannerPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
